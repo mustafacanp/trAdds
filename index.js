@@ -1,6 +1,7 @@
 
 function ek (metin, ekler) {
 
+    ekler = ekler.replace(/\s/g, '');
     var ekler_dizisi = ekler.split(",");
     var cogul_mu = false;
     var kesme_isareti = false;
@@ -26,18 +27,19 @@ function ek (metin, ekler) {
         ozel_isim_mi = true;
     }
 
-    for (var i = 0; i < ekler_dizisi.length; i++) {            
-        if (ekler_dizisi[i] == "ler" || ekler_dizisi[i] == "lar") { metin = _ler(metin, ozel_isim_mi); cogul_mu = true; }
-        if (ekler_dizisi[i] == "in" || ekler_dizisi[i] == "ın") { metin = _in(metin, ozel_isim_mi, yabanci_mi); }
-        if (ekler_dizisi[i] == "e" || ekler_dizisi[i] == "a") { metin = _e(metin, ozel_isim_mi, yabanci_mi); }
-        if (ekler_dizisi[i] == "i" || ekler_dizisi[i] == "ı") { metin = _i( metin, ozel_isim_mi, yabanci_mi); }
-        if (ekler_dizisi[i] == "de" || ekler_dizisi[i] == "da" || ekler_dizisi[i] == "den" || ekler_dizisi[i] == "dan") { metin = _de_den(metin, ekler_dizisi[i], ozel_isim_mi); }
+    for (var i = 0; i < ekler_dizisi.length; i++) {
+        if (ekler_dizisi[i] == "lar" || ekler_dizisi[i] == "ler") { metin = _ler(metin, ozel_isim_mi); cogul_mu = true; }
+        if (ekler_dizisi[i] == "ın"  || ekler_dizisi[i] == "in"  || ekler_dizisi[i] == "un"  || ekler_dizisi[i] == "ün" ) { metin = _in(metin, ozel_isim_mi, yabanci_mi); }
+        if (ekler_dizisi[i] == "a"   || ekler_dizisi[i] == "e"   || ekler_dizisi[i] == "u"   || ekler_dizisi[i] == "ü"  ) { metin = _e(metin, ozel_isim_mi, yabanci_mi); }
+        if (ekler_dizisi[i] == "ı"   || ekler_dizisi[i] == "i"   || ekler_dizisi[i] == "u"   || ekler_dizisi[i] == "ü"  ) { metin = _i( metin, ozel_isim_mi, yabanci_mi); }
+        if (ekler_dizisi[i] == "da"  || ekler_dizisi[i] == "de"  || ekler_dizisi[i] == "ta"  || ekler_dizisi[i] == "te" ||
+            ekler_dizisi[i] == "dan" || ekler_dizisi[i] == "den" || ekler_dizisi[i] == "tan" || ekler_dizisi[i] == "ten") { metin = _de_den(metin, ekler_dizisi[i], ozel_isim_mi); }
     }
 
     return metin;
 
 
-    function _ler (metin) {
+    function _ler (metin) { // Çokluk (Çoğul) Eki (-lar / -ler)
         
         if (ozel_isim_mi && !kesme_isareti) {
             metin = ozelIsim(metin, true);
@@ -54,8 +56,9 @@ function ek (metin, ekler) {
     }
 
 
-    function _in (metin, ozel_isim_mi, yabanci_mi) {
-
+    function _in (metin, ozel_isim_mi, yabanci_mi) { // İlgi (Tamlama) Ekleri (-ın / -in / -un / -ün)
+        if (metin == "ben") { return "benim"; } // Özel Kural
+        if (metin == "biz") { return "bizim"; } // Özel Kural
         if (metin.match(/.*[aeoueıiöü]$/i)) {
             if (ozel_isim_mi && !cogul_mu && !kesme_isareti) {
                 metin = ozelIsim(metin);
@@ -84,7 +87,7 @@ function ek (metin, ekler) {
     }
 
 
-    function _e (metin, ozel_isim_mi, yabanci_mi) {
+    function _e (metin, ozel_isim_mi, yabanci_mi) { // Yönelme durumu eki:(-e / -a)
         if (metin.match(/.*[aeoueıiöü]$/i)) {
             if (ozel_isim_mi && !cogul_mu && !kesme_isareti) {
                 metin = ozelIsim(metin);
@@ -109,7 +112,7 @@ function ek (metin, ekler) {
     }
 
 
-    function _i (metin, ozel_isim_mi, yabanci_mi) {
+    function _i (metin, ozel_isim_mi, yabanci_mi) { // Belirtme durumu eki (-i / -ı / -u / -ü)
         if (metin.match(/.*[aeoueıiöü]$/i)) {
             if (ozel_isim_mi && !cogul_mu && !kesme_isareti) {
                 metin = ozelIsim(metin);
@@ -138,7 +141,7 @@ function ek (metin, ekler) {
     }
 
 
-    function _de_den (metin, ek, ozel_isim_mi, yabanci_mi) {
+    function _de_den (metin, ek, ozel_isim_mi, yabanci_mi) { // Bulunma durumu eki: (-de / -da / -te / -ta) / Ayrılma (Çıkma) durumu eki: (-den / -dan / -ten / -tan)
         
         metin = metin;
         if (metin.match(/.*[çfhksştp]$/i)) {
@@ -160,7 +163,7 @@ function ek (metin, ekler) {
             metin += "e";
         }
 
-        if (ek == "den" || ek == "dan") {
+        if (ek == "dan" || ek == "den" || ek == "tan" || ek == "ten") {
             return metin + "n";
         } else {
             return metin;
